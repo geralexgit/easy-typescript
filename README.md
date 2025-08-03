@@ -72,6 +72,9 @@
 
 ## Автор
 
-**Герасимов Александр** - [@geralex](https://t.me/geralex)
+**Герасимов Александр**
 
-Связаться с автором можно в Telegram для вопросов, предложений и обратной связи по материалам.
+- Telegram: [@geralex](https://t.me/geralex)
+- Email: [geralexndr@gmail.com](mailto:geralexndr@gmail.com)
+
+Связаться с автором можно в Telegram или по email для вопросов, предложений и обратной связи по материалам.
