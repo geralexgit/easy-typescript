@@ -128,8 +128,6 @@ echo "Создание объединенного markdown файла..."
 # Create a combined markdown file with metadata and preface
 cat <<EOF > combined.md
 ---
-title: "$TITLE"
-subtitle: "$SUBTITLE"
 author: "$AUTHOR"
 date: "$DATE"
 lang: ru
@@ -165,7 +163,39 @@ toc-depth: 2
 
 EOF
 
-# Append all existing files with section dividers
+# Function to create anchor from text
+create_anchor() {
+    local text="$1"
+    echo "$text" | tr '[:upper:]' '[:lower:]' | \
+    sed 's/[^a-zA-Zа-яё0-9 ]//g' | \
+    sed 's/[[:space:]]\+/-/g' | \
+    sed 's/--*/-/g' | \
+    sed 's/^-\|-$//g'
+}
+
+# Function to process markdown file and add clickable anchors to headers
+process_file_with_anchors() {
+    local input_file="$1"
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^#{1,6}[[:space:]]+ ]]; then
+            # Extract heading level and text
+            heading_level=$(echo "$line" | grep -o '^#*' | wc -c)
+            heading_level=$((heading_level - 1))
+            heading_text=$(echo "$line" | sed 's/^#*[[:space:]]*//')
+            
+            # Create clean anchor
+            anchor=$(create_anchor "$heading_text")
+            
+            # Output heading with HTML anchor for clickable navigation
+            echo "<h$heading_level id=\"$anchor\">$heading_text</h$heading_level>"
+        else
+            echo "$line"
+        fi
+    done < "$input_file"
+}
+
+# Append all existing files with section dividers and anchors
 current_section=""
 for file in "${EXISTING_FILES[@]}"; do
     # Extract file number
@@ -175,25 +205,32 @@ for file in "${EXISTING_FILES[@]}"; do
         
         # Determine section based on file number
         new_section=""
+        section_anchor=""
         if [[ $file_num -ge 1 && $file_num -le 10 ]]; then
             new_section="🏗️ Основы TypeScript (01-10)"
+            section_anchor="основы-typescript-01-10"
         elif [[ $file_num -ge 11 && $file_num -le 30 ]]; then
             new_section="🔧 Система типов (11-30)"
+            section_anchor="система-типов-11-30"
         elif [[ $file_num -ge 31 && $file_num -le 49 ]]; then
             new_section="📝 Лучшие практики (31-49)"
+            section_anchor="лучшие-практики-31-49"
         elif [[ $file_num -ge 50 && $file_num -le 64 ]]; then
             new_section="🚀 Продвинутые типы (50-64)"
+            section_anchor="продвинутые-типы-50-64"
         elif [[ $file_num -ge 65 && $file_num -le 71 ]]; then
             new_section="📦 Публикация и API (65-71)"
+            section_anchor="публикация-и-api-65-71"
         elif [[ $file_num -ge 72 && $file_num -le 83 ]]; then
             new_section="⚡ Производительность и миграция (72-83)"
+            section_anchor="производительность-и-миграция-72-83"
         fi
         
         # Add section divider if section changed
         if [[ "$new_section" != "$current_section" && -n "$new_section" ]]; then
             echo "" >> combined.md
             echo '<div class="section-divider">' >> combined.md
-            echo "<h1>$new_section</h1>" >> combined.md
+            echo "<h1 id=\"$section_anchor\">$new_section</h1>" >> combined.md
             echo '</div>' >> combined.md
             echo "" >> combined.md
             current_section="$new_section"
@@ -203,7 +240,7 @@ for file in "${EXISTING_FILES[@]}"; do
         if [[ "$current_section" != "📚 Справочные материалы" ]]; then
             echo "" >> combined.md
             echo '<div class="section-divider">' >> combined.md
-            echo "<h1>📚 Справочные материалы</h1>" >> combined.md
+            echo '<h1 id="справочные-материалы">📚 Справочные материалы</h1>' >> combined.md
             echo '</div>' >> combined.md
             echo "" >> combined.md
             current_section="📚 Справочные материалы"
@@ -211,7 +248,8 @@ for file in "${EXISTING_FILES[@]}"; do
     fi
     
     echo "" >> combined.md
-    cat "$file" >> combined.md
+    # Process file content and add proper anchors to headers
+    process_file_with_anchors "$file" >> combined.md
     echo "" >> combined.md
 done
 
@@ -223,7 +261,7 @@ echo "Создание PDF из ${#EXISTING_FILES[@]} файлов..."
 echo "Добавление оглавления..."
 TOC_FILE="combined_with_toc.md"
 
-# Create enhanced file with navigation and metadata
+# Create enhanced file with navigation and metadata (without title/subtitle)
 cat <<EOF > "$TOC_FILE"
 ---
 pdf_options:
@@ -235,15 +273,6 @@ pdf_options:
   footerTemplate: '<div style="font-size: 10px; text-align: center; width: 100%;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>'
 stylesheet: 
   - ./styles.css
----
-
-# $TITLE
-
-**$SUBTITLE**
-
-*Автор: $AUTHOR*  
-*Дата: $DATE*
-
 ---
 
 # Оглавление
@@ -280,9 +309,10 @@ generate_section_toc() {
         # Find file that starts with this number
         for file in "${EXISTING_FILES[@]}"; do
             if [[ "$file" =~ ^0*$i\. ]]; then
-                # Extract title and create anchor
+                # Extract title and create anchor using the same function as headers
                 title=$(echo "$file" | sed 's/^[0-9]*\. //' | sed 's/\.md$//')
-                anchor=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Zа-яё0-9 ]//g' | sed 's/ /-/g')
+                # Use the same anchor creation function for consistency
+                anchor=$(create_anchor "$title")
                 echo "- [$i. $title](#$anchor)" >> "$TOC_FILE"
                 break
             fi
@@ -290,22 +320,65 @@ generate_section_toc() {
     done
 }
 
-# Generate sections
-generate_section_toc 1 10 "Основы TypeScript" "🏗️"
-generate_section_toc 11 30 "Система типов" "🔧"
-generate_section_toc 31 49 "Лучшие практики" "📝"
-generate_section_toc 50 64 "Продвинутые типы" "🚀"
-generate_section_toc 65 71 "Публикация и API" "📦"
-generate_section_toc 72 83 "Производительность и миграция" "⚡"
+# Generate clickable sections with enhanced styling
+generate_clickable_section_toc() {
+    local start=$1
+    local end=$2
+    local section_name=$3
+    local icon=$4
+    
+    echo "" >> "$TOC_FILE"
+    echo "### $icon $section_name" >> "$TOC_FILE"
+    echo "" >> "$TOC_FILE"
+    
+    for ((i=start; i<=end; i++)); do
+        # Find file that starts with this number
+        for file in "${EXISTING_FILES[@]}"; do
+            if [[ "$file" =~ ^0*$i\. ]]; then
+                # Extract title and create anchor using the same function as headers
+                title=$(echo "$file" | sed 's/^[0-9]*\. //' | sed 's/\.md$//')
+                # Use the same anchor creation function for consistency
+                anchor=$(create_anchor "$title")
+                
+                # Format with clickable styling
+                echo "<div class=\"clickable-toc-entry\">" >> "$TOC_FILE"
+                echo "  <span class=\"toc-chapter-number\">$i</span>" >> "$TOC_FILE"
+                echo "  <a href=\"#$anchor\" class=\"toc-link\">$title</a>" >> "$TOC_FILE"
+                echo "</div>" >> "$TOC_FILE"
+                echo "" >> "$TOC_FILE"
+                break
+            fi
+        done
+    done
+}
 
-# Add reference materials
+# Generate clickable sections
+generate_clickable_section_toc 1 10 "Основы TypeScript" "🏗️"
+generate_clickable_section_toc 11 30 "Система типов" "🔧"
+generate_clickable_section_toc 31 49 "Лучшие практики" "📝"
+generate_clickable_section_toc 50 64 "Продвинутые типы" "🚀"
+generate_clickable_section_toc 65 71 "Публикация и API" "📦"
+generate_clickable_section_toc 72 83 "Производительность и миграция" "⚡"
+
+# Add clickable reference materials
 cat <<EOF >> "$TOC_FILE"
 
 ### 📚 Справочные материалы
 
-- [Базовые типы](#базовые-типы)
-- [Дженерики](#дженерики)
-- [Специальные типы](#специальные-типы)
+<div class="clickable-toc-entry">
+  <span class="toc-chapter-number">📖</span>
+  <a href="#базовые-типы" class="toc-link">Базовые типы</a>
+</div>
+
+<div class="clickable-toc-entry">
+  <span class="toc-chapter-number">🔧</span>
+  <a href="#дженерики" class="toc-link">Дженерики</a>
+</div>
+
+<div class="clickable-toc-entry">
+  <span class="toc-chapter-number">⚡</span>
+  <a href="#специальные-типы" class="toc-link">Специальные типы</a>
+</div>
 
 <div class="quick-ref">
 <h3>💡 Как использовать навигацию</h3>

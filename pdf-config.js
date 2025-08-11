@@ -141,6 +141,77 @@ module.exports = {
       margin-top: 0;
       color: #856404;
     }
+    
+    /* Clickable navigation styles */
+    .anchor-link {
+      position: absolute;
+      left: -9999px;
+    }
+    
+    .toc-link {
+      color: #0066cc !important;
+      text-decoration: underline;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    
+    .toc-link:hover {
+      color: #004499 !important;
+      text-decoration: underline;
+    }
+    
+    .internal-link {
+      color: #0066cc;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    
+    .internal-link:hover {
+      color: #004499;
+      text-decoration: underline;
+    }
+    
+    /* Enhanced clickable TOC entries */
+    .clickable-toc-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.5em 0;
+      padding: 0.5em;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      background: #fafafa;
+      transition: all 0.2s ease;
+    }
+    
+    .clickable-toc-entry:hover {
+      background: #f0f8ff;
+      border-color: #0066cc;
+      transform: translateX(2px);
+    }
+    
+    .clickable-toc-entry a {
+      color: #0066cc !important;
+      text-decoration: none;
+      font-weight: 500;
+      flex-grow: 1;
+    }
+    
+    .clickable-toc-entry a:hover {
+      text-decoration: underline;
+    }
+    
+    .toc-chapter-number {
+      background: #0066cc;
+      color: white;
+      padding: 0.2em 0.5em;
+      border-radius: 3px;
+      font-size: 0.9em;
+      font-weight: bold;
+      margin-right: 0.5em;
+      min-width: 2em;
+      text-align: center;
+    }
   `,
   pdf_options: {
     format: 'A4',
@@ -167,16 +238,23 @@ module.exports = {
     tagged: true,
     outline: true,
     generateDocumentOutline: true,
-    // Enable PDF bookmarks
+    // Enable PDF bookmarks and internal links
     preferCSSPageSize: true,
-    // Better text rendering
-    omitBackground: false
+    omitBackground: false,
+    // Enable JavaScript for enhanced navigation
+    javascriptEnabled: true,
+    // Wait for content to load
+    waitForSelector: 'body',
+    // Launch options for better PDF generation
+    launch_options: {
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
   },
   marked_options: {
     headerIds: true,
     mangle: false
   },
-  // Enhanced table of contents
+  // Enhanced table of contents with clickable links
   toc: true,
   tocDepth: 2
 };
