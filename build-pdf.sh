@@ -125,16 +125,8 @@ fi
 echo ""
 echo "Создание объединенного markdown файла..."
 
-# Create a combined markdown file with metadata and preface
+# Create a combined markdown file without metadata
 cat <<EOF > combined.md
----
-author: "$AUTHOR"
-date: "$DATE"
-lang: ru
-toc: true
-toc-depth: 2
----
-
 # Предисловие
 
 Данная коллекция статей основана на книге **«Эффективный TypeScript»** автора **Дэна Вандеркама**.
@@ -268,20 +260,8 @@ echo "Создание PDF из ${#EXISTING_FILES[@]} файлов..."
 echo "Добавление оглавления..."
 TOC_FILE="combined_with_toc.md"
 
-# Create enhanced file with navigation and metadata (without title/subtitle)
+# Create enhanced file with navigation (no metadata)
 cat <<EOF > "$TOC_FILE"
----
-pdf_options:
-  format: A4
-  margin: 20mm
-  printBackground: true
-  displayHeaderFooter: true
-  headerTemplate: '<div></div>'
-  footerTemplate: '<div style="font-size: 10px; text-align: center; width: 100%;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>'
-stylesheet: 
-  - ./styles.css
----
-
 # Оглавление
 
 <div class="nav-section">
