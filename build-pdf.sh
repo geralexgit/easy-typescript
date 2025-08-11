@@ -173,6 +173,13 @@ create_anchor() {
     sed 's/^-\|-$//g'
 }
 
+# Function to extract the first header from a markdown file
+get_first_header() {
+    local file="$1"
+    # Find the first line that starts with # and extract the text
+    grep -m 1 '^#[[:space:]]' "$file" | sed 's/^#[[:space:]]*//' || echo ""
+}
+
 # Function to process markdown file and add clickable anchors to headers
 process_file_with_anchors() {
     local input_file="$1"
@@ -335,8 +342,15 @@ generate_clickable_section_toc() {
         # Find file that starts with this number
         for file in "${EXISTING_FILES[@]}"; do
             if [[ "$file" =~ ^0*$i\. ]]; then
-                # Extract title and create anchor using the same function as headers
-                title=$(echo "$file" | sed 's/^[0-9]*\. //' | sed 's/\.md$//')
+                # Get the actual first header from the file instead of using filename
+                actual_header=$(get_first_header "$file")
+                if [[ -n "$actual_header" ]]; then
+                    title="$actual_header"
+                else
+                    # Fallback to filename if no header found
+                    title=$(echo "$file" | sed 's/^[0-9]*\. //' | sed 's/\.md$//')
+                fi
+                
                 # Use the same anchor creation function for consistency
                 anchor=$(create_anchor "$title")
                 

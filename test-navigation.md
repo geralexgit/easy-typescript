@@ -17,6 +17,13 @@
 - **Solution**: Updated all TOC generation functions to use the same `create_anchor()` function
 - **Result**: TOC links now properly navigate to corresponding headers
 
+### 4. **First Header "Про то как TypeScript связан с JavaScript" - FIXED**
+- **Problem**: First header was not clickable because TOC used filename but actual header was different
+- **Filename**: "Про то как TypeScript связан с JavaScript"
+- **Actual Header**: "Как TypeScript связан с JavaScript"
+- **Solution**: Added `get_first_header()` function to extract actual first header from each file
+- **Result**: TOC now uses actual headers instead of filenames, making all links clickable
+
 ## 🎯 How Clickable Navigation Works Now
 
 ### Header Processing
