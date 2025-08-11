@@ -1,0 +1,202 @@
+/* General styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    color: #333;
+}
+
+/* Header styling */
+header {
+    text-align: center;
+    margin-bottom: 2em;
+    padding-bottom: 1em;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+h1.title {
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 0.5em;
+}
+
+p.subtitle {
+    color: #7f8c8d;
+    font-size: 1.2em;
+    font-style: italic;
+}
+
+p.author, p.date {
+    color: #95a5a6;
+    margin: 0.5em 0;
+}
+
+/* Table of Contents */
+#TOC {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 2em 0;
+}
+
+#TOC > ul {
+    margin: 0;
+    padding-left: 0;
+}
+
+#TOC ul {
+    list-style-type: none;
+}
+
+#TOC li {
+    margin: 0.5em 0;
+}
+
+#TOC a {
+    color: #007bff;
+    text-decoration: none;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+#TOC a:hover {
+    background-color: #e3f2fd;
+    text-decoration: underline;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #2c3e50;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+h1 {
+    font-size: 2.2em;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 1.8em;
+    border-bottom: 2px solid #95a5a6;
+    padding-bottom: 0.3em;
+}
+
+h3 {
+    font-size: 1.4em;
+    color: #34495e;
+}
+
+/* Code styling */
+code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #e74c3c;
+}
+
+pre {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 15px;
+    overflow-x: auto;
+    margin: 1.5em 0;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* Blockquotes */
+blockquote {
+    border-left: 4px solid #3498db;
+    margin: 1.5em 0;
+    padding: 0.5em 0 0.5em 1em;
+    background-color: #f8f9fa;
+    font-style: italic;
+}
+
+/* Lists */
+ul, ol {
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+li {
+    margin: 0.5em 0;
+}
+
+/* Tables */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5em 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Links */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    h1.title {
+        font-size: 2em;
+    }
+    
+    pre {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+    
+    #TOC {
+        page-break-after: always;
+    }
+    
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    
+    pre {
+        page-break-inside: avoid;
+    }
+}
