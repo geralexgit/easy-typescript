@@ -165,35 +165,178 @@ toc-depth: 2
 
 EOF
 
-# Append all existing files
+# Append all existing files with section dividers
+current_section=""
 for file in "${EXISTING_FILES[@]}"; do
+    # Extract file number
+    if [[ "$file" =~ ^([0-9]+)\. ]]; then
+        file_num=${BASH_REMATCH[1]}
+        file_num=$((10#$file_num))  # Convert to decimal to handle leading zeros
+        
+        # Determine section based on file number
+        new_section=""
+        if [[ $file_num -ge 1 && $file_num -le 10 ]]; then
+            new_section="🏗️ Основы TypeScript (01-10)"
+        elif [[ $file_num -ge 11 && $file_num -le 30 ]]; then
+            new_section="🔧 Система типов (11-30)"
+        elif [[ $file_num -ge 31 && $file_num -le 49 ]]; then
+            new_section="📝 Лучшие практики (31-49)"
+        elif [[ $file_num -ge 50 && $file_num -le 64 ]]; then
+            new_section="🚀 Продвинутые типы (50-64)"
+        elif [[ $file_num -ge 65 && $file_num -le 71 ]]; then
+            new_section="📦 Публикация и API (65-71)"
+        elif [[ $file_num -ge 72 && $file_num -le 83 ]]; then
+            new_section="⚡ Производительность и миграция (72-83)"
+        fi
+        
+        # Add section divider if section changed
+        if [[ "$new_section" != "$current_section" && -n "$new_section" ]]; then
+            echo "" >> combined.md
+            echo '<div class="section-divider">' >> combined.md
+            echo "<h1>$new_section</h1>" >> combined.md
+            echo '</div>' >> combined.md
+            echo "" >> combined.md
+            current_section="$new_section"
+        fi
+    elif [[ "$file" =~ ^_.*\.md$ ]]; then
+        # Handle reference materials
+        if [[ "$current_section" != "📚 Справочные материалы" ]]; then
+            echo "" >> combined.md
+            echo '<div class="section-divider">' >> combined.md
+            echo "<h1>📚 Справочные материалы</h1>" >> combined.md
+            echo '</div>' >> combined.md
+            echo "" >> combined.md
+            current_section="📚 Справочные материалы"
+        fi
+    fi
+    
     echo "" >> combined.md
     cat "$file" >> combined.md
     echo "" >> combined.md
 done
 
-# === Step 4: Generate PDF directly with pandoc ===
-echo "Генерация PDF с помощью pandoc..."
+# === Step 4: Generate PDF with md-to-pdf ===
+echo "Генерация PDF с помощью md-to-pdf..."
 echo "Создание PDF из ${#EXISTING_FILES[@]} файлов..."
 
-pandoc combined.md -o "$OUTPUT" \
-  --pdf-engine=xelatex \
-  -V mainfont="Noto Sans" \
-  -V emoji=true \
-  -V lang=ru \
-  -V geometry="6in x 9in" \
-  -V mainfont="Symbola" \
-  -V linestretch=1.2 \
-  -V block-headings=true \
-  -V header-includes='\usepackage{titlesec}\titlespacing*{\section}{0pt}{24pt}{12pt}\titlespacing*{\subsection}{0pt}{18pt}{9pt}' \
-  --toc-depth=2 \
-  --listings \
-  --highlight-style=tango
+# Add table of contents to the beginning of the markdown file
+echo "Добавление оглавления..."
+TOC_FILE="combined_with_toc.md"
+
+# Create enhanced file with navigation and metadata
+cat <<EOF > "$TOC_FILE"
+---
+pdf_options:
+  format: A4
+  margin: 20mm
+  printBackground: true
+  displayHeaderFooter: true
+  headerTemplate: '<div></div>'
+  footerTemplate: '<div style="font-size: 10px; text-align: center; width: 100%;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>'
+stylesheet: 
+  - ./styles.css
+---
+
+# $TITLE
+
+**$SUBTITLE**
+
+*Автор: $AUTHOR*  
+*Дата: $DATE*
+
+---
+
+# Оглавление
+
+<div class="nav-section">
+<h2>📖 Быстрая навигация по разделам</h2>
+<div class="nav-links">
+<a href="#основы-typescript-01-10" class="nav-link">🏗️ Основы TypeScript (01-10)</a>
+<a href="#система-типов-11-30" class="nav-link">🔧 Система типов (11-30)</a>
+<a href="#лучшие-практики-31-49" class="nav-link">📝 Лучшие практики (31-49)</a>
+<a href="#продвинутые-типы-50-64" class="nav-link">🚀 Продвинутые типы (50-64)</a>
+<a href="#публикация-и-api-65-71" class="nav-link">📦 Публикация и API (65-71)</a>
+<a href="#производительность-и-миграция-72-83" class="nav-link">⚡ Производительность и миграция (72-83)</a>
+<a href="#справочные-материалы" class="nav-link">📚 Справочные материалы</a>
+</div>
+</div>
+
+## 🏗️ Основы TypeScript (01-10)
+
+EOF
+
+# Generate detailed TOC with sections
+generate_section_toc() {
+    local start=$1
+    local end=$2
+    local section_name=$3
+    local icon=$4
+    
+    echo "" >> "$TOC_FILE"
+    echo "### $icon $section_name" >> "$TOC_FILE"
+    echo "" >> "$TOC_FILE"
+    
+    for ((i=start; i<=end; i++)); do
+        # Find file that starts with this number
+        for file in "${EXISTING_FILES[@]}"; do
+            if [[ "$file" =~ ^0*$i\. ]]; then
+                # Extract title and create anchor
+                title=$(echo "$file" | sed 's/^[0-9]*\. //' | sed 's/\.md$//')
+                anchor=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Zа-яё0-9 ]//g' | sed 's/ /-/g')
+                echo "- [$i. $title](#$anchor)" >> "$TOC_FILE"
+                break
+            fi
+        done
+    done
+}
+
+# Generate sections
+generate_section_toc 1 10 "Основы TypeScript" "🏗️"
+generate_section_toc 11 30 "Система типов" "🔧"
+generate_section_toc 31 49 "Лучшие практики" "📝"
+generate_section_toc 50 64 "Продвинутые типы" "🚀"
+generate_section_toc 65 71 "Публикация и API" "📦"
+generate_section_toc 72 83 "Производительность и миграция" "⚡"
+
+# Add reference materials
+cat <<EOF >> "$TOC_FILE"
+
+### 📚 Справочные материалы
+
+- [Базовые типы](#базовые-типы)
+- [Дженерики](#дженерики)
+- [Специальные типы](#специальные-типы)
+
+<div class="quick-ref">
+<h3>💡 Как использовать навигацию</h3>
+<p>В PDF-версии вы можете:</p>
+<ul>
+<li>Использовать закладки в боковой панели PDF-ридера</li>
+<li>Кликать по ссылкам в оглавлении для быстрого перехода</li>
+<li>Использовать поиск (Ctrl+F) для нахождения конкретных тем</li>
+<li>Переходить между разделами с помощью навигационных блоков</li>
+</ul>
+</div>
+
+---
+
+EOF
+
+# Append original content
+cat combined.md >> "$TOC_FILE"
+
+# Generate PDF using md-to-pdf
+npx md-to-pdf "$TOC_FILE" --config-file ./pdf-config.js
+
+# Rename the generated PDF to our desired output name
+if [[ -f "${TOC_FILE%.md}.pdf" ]]; then
+    mv "${TOC_FILE%.md}.pdf" "$OUTPUT"
+fi
   
 
 # === Step 5: Clean up ===
 echo "Очистка временных файлов..."
-rm -f combined.md
+rm -f combined.md "$TOC_FILE"
 
 if [[ -f "$OUTPUT" ]]; then
     echo ""
@@ -206,6 +349,6 @@ if [[ -f "$OUTPUT" ]]; then
 else
     echo ""
     echo "✗ Ошибка при создании PDF"
-    echo "Проверьте логи компиляции pandoc"
+    echo "Проверьте логи компиляции markdown-pdf"
     exit 1
 fi

@@ -1,5 +1,16 @@
 {
+  "scripts": {
+    "build:pdf": "./build-pdf.sh",
+    "build:pdf-simple": "rm -f combined.md && cat *.md > combined.md && md-to-pdf combined.md",
+    "build:pdf-clean": "rm -f combined.md && cat *.md > combined.md && md-to-pdf combined.md && rm combined.md",
+    "build:pdf-nav": "./build-pdf.sh && echo 'PDF with navigation created successfully!'",
+    "preview:nav": "echo 'Opening navigation index...' && cat navigation-index.md"
+  },
   "dependencies": {
+    "markdown-pdf": "^11.0.0",
     "puppeteer": "^24.16.1"
+  },
+  "devDependencies": {
+    "md-to-pdf": "^5.2.4"
   }
 }
