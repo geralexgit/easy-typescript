@@ -187,11 +187,32 @@ Your TypeScript documentation now has fully working clickable PDF navigation wit
 - **83 Numbered Articles** plus reference materials
 - **Clickable TOC Entries** for every article
 - **Fixed Quick Navigation** - All 7 section links work correctly
+- **Fixed Reference Materials** - Базовые типы, Дженерики, Специальные типы navigation now works
 
 ### 🔧 What Was Fixed
 1. **Anchor Mismatch** - Navigation links now match section IDs exactly
 2. **Hidden Sections** - Section dividers are now visible with beautiful styling
 3. **Inconsistent IDs** - Simplified anchor generation for better reliability
 4. **Navigation Styling** - Enhanced visual design for better user experience
+5. **Reference Materials Headers** - Fixed processing of headers without spaces after # symbol
+
+### ✅ Reference Materials Navigation Fixed
+The reference materials (Базовые типы, Дженерики, Специальные типы) now have working navigation because:
+- **Header Processing** - Updated regex pattern to handle headers like `#Базовые типы` (without space after #)
+- **Anchor Generation** - Fixed `get_first_header` function to extract titles from all header formats
+- **Invisible Anchors** - Added invisible dividers with specific anchor IDs before each reference material
+- **Consistent Linking** - Navigation links now correctly point to the invisible anchor targets
+
+### 🔧 Technical Implementation
+- **Invisible Dividers** - Added `<div class="invisible-anchor" id="базовые-типы"></div>` before each reference file
+- **Fixed CSS Positioning** - Invisible anchors use `position: static` to maintain proper document flow
+- **Proper Scroll Targets** - Anchors are invisible but positioned correctly for smooth scrolling
+- **Anchor Mapping** - TOC links point to invisible anchors that are positioned right before content
+
+### ✅ Scroll Position Fixed
+The reference materials navigation now scrolls to the correct location because:
+- **Static Positioning** - Removed `position: absolute` that was taking anchors out of document flow
+- **Document Flow** - Anchors maintain their position in the content flow for accurate scrolling
+- **Zero Height** - Invisible anchors don't affect layout but provide perfect scroll targets
 
 The PDF navigation is now fully functional and provides an excellent reading experience!

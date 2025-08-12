@@ -168,8 +168,8 @@ create_anchor() {
 # Function to extract the first header from a markdown file
 get_first_header() {
     local file="$1"
-    # Find the first line that starts with # and extract the text
-    grep -m 1 '^#[[:space:]]' "$file" | sed 's/^#[[:space:]]*//' || echo ""
+    # Find the first line that starts with # and extract the text (with or without space after #)
+    grep -m 1 '^#' "$file" | sed 's/^#[[:space:]]*//' || echo ""
 }
 
 # Function to process markdown file and add clickable anchors to headers
@@ -177,7 +177,7 @@ process_file_with_anchors() {
     local input_file="$1"
     
     while IFS= read -r line; do
-        if [[ "$line" =~ ^#{1,6}[[:space:]]+ ]]; then
+        if [[ "$line" =~ ^#{1,6}([[:space:]]+|[^[:space:]]) ]]; then
             # Extract heading level and text
             heading_level=$(echo "$line" | grep -o '^#*' | wc -c)
             heading_level=$((heading_level - 1))
@@ -243,6 +243,15 @@ for file in "${EXISTING_FILES[@]}"; do
             echo '</div>' >> combined.md
             echo "" >> combined.md
             current_section="📚 Справочные материалы"
+        fi
+        
+        # Add invisible anchors for specific reference materials
+        if [[ "$file" == "_Базовые типы.md" ]]; then
+            echo '<div class="invisible-anchor" id="базовые-типы"></div>' >> combined.md
+        elif [[ "$file" == "_Дженерики.md" ]]; then
+            echo '<div class="invisible-anchor" id="дженерики"></div>' >> combined.md
+        elif [[ "$file" == "_Специальные типы.md" ]]; then
+            echo '<div class="invisible-anchor" id="специальные-типы"></div>' >> combined.md
         fi
     fi
     

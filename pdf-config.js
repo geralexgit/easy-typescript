@@ -177,6 +177,21 @@ module.exports = {
       left: -9999px;
     }
     
+    /* Invisible anchors for reference materials navigation */
+    .invisible-anchor {
+      display: block;
+      height: 0;
+      width: 0;
+      margin: 0;
+      padding: 0;
+      border: none;
+      outline: none;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      position: static;
+    }
+    
     .toc-link {
       color: #0066cc !important;
       text-decoration: underline;
