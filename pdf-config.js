@@ -6,6 +6,11 @@ module.exports = {
       /* Remove default page numbers from bottom */
     }
     
+    /* Enhanced smooth scrolling for all internal links */
+    html {
+      scroll-behavior: smooth;
+    }
+    
     /* Table of Contents styling */
     .toc {
       page-break-after: always;
@@ -65,16 +70,22 @@ module.exports = {
     
     .nav-link {
       display: block;
-      padding: 0.5em;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 0.75em 0;
+      border: 2px solid #0066cc;
+      border-radius: 6px;
       text-decoration: none;
-      color: #333;
+      color: #0066cc !important;
+      font-weight: 500;
+      text-align: center;
       transition: all 0.2s;
+      cursor: pointer;
     }
     
     .nav-link:hover {
-      border-color: #0066cc;
+      background: #0066cc;
+      color: white !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
     }
     
     /* Chapter numbering - only for main content, not navigation */
@@ -127,9 +138,22 @@ module.exports = {
       left: -9999px;
     }
     
-    /* Section dividers - removed decorative styling */
+    /* Section dividers - visible for navigation */
     .section-divider {
-      display: none;
+      margin: 2em 0;
+      page-break-before: always;
+      page-break-inside: avoid;
+    }
+    
+    .section-divider h1 {
+      background: linear-gradient(135deg, #0066cc, #004499);
+      color: white;
+      padding: 1em;
+      margin: 0;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.5em;
+      box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
     }
     
     /* Quick reference boxes */
