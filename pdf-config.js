@@ -11,6 +11,26 @@ module.exports = {
       scroll-behavior: smooth;
     }
     
+    /* Cover page styling */
+    .cover-page {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      page-break-after: always;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .cover-image {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+    
     /* Table of Contents styling */
     .toc {
       page-break-after: always;

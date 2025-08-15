@@ -271,6 +271,12 @@ TOC_FILE="combined_with_toc.md"
 
 # Create enhanced file with navigation (no metadata)
 cat <<EOF > "$TOC_FILE"
+<div class="cover-page">
+<img src="assets/cover.png" alt="Практический TypeScript - Обложка" class="cover-image" />
+</div>
+
+<div style="page-break-before: always;"></div>
+
 # Оглавление
 
 <div class="nav-section">
