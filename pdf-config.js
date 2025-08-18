@@ -20,6 +20,7 @@ module.exports = {
       page-break-after: always;
       margin: 0;
       padding: 0;
+      page-break-after: avoid;
     }
     
     .cover-image {
@@ -29,12 +30,18 @@ module.exports = {
       height: auto;
       object-fit: contain;
       display: block;
+      page-break-before: avoid;
     }
     
     /* Table of Contents styling */
     .toc {
       page-break-after: always;
       margin-bottom: 2em;
+    }
+    
+    /* Ensure TOC starts immediately after cover */
+    h1:first-of-type {
+      page-break-before: avoid;
     }
     
     .toc h1 {

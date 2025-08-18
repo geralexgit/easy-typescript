@@ -273,8 +273,6 @@ cat <<EOF > "$TOC_FILE"
 <img src="assets/cover.png" alt="Практический TypeScript - Обложка" class="cover-image" />
 </div>
 
-<div style="page-break-before: always;"></div>
-
 # Оглавление
 
 <div class="nav-section">
