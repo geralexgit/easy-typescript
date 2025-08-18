@@ -292,8 +292,6 @@ cat <<EOF > "$TOC_FILE"
 </div>
 </div>
 
-## 🏗️ Основы TypeScript (01-10)
-
 EOF
 
 # Generate detailed TOC with sections
